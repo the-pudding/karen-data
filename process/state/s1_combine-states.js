@@ -15,9 +15,9 @@ function processCSV(filename) {
     let data = d3.csvParseRows(raw, function(d,i) {
         return {
             state: d[0],
-            year: d[1],
+            year: d[2],
             name: d[3],
-            gender: d[2],
+            gender: d[1],
             count: +d[4]
         }
     })  

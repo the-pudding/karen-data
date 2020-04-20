@@ -1,6 +1,6 @@
 # Combining SSA baby name data files
 
-Node scripts to combine and clean [Social Security Administration](https://www.ssa.gov/oact/babynames/limits.html) national and state-level baby name data. Currently a WIP for an upcoming story on [The Pudding](https://pudding.cool/).
+Node scripts to combine and clean [Social Security Administration](https://www.ssa.gov/oact/babynames/limits.html) national and state-level baby name data. Currently a WIP for an upcoming story on [The Pudding](https://pudding.cool/). The `outuput` folder has been `gitignored` from this repo due to large data files.
 
 ## Setup
 
@@ -21,7 +21,7 @@ Clone the repo and run `npm i`
 
 #### `npm run combine-years`
 
-Combines annual national level data files from `input/national/`. There is a separate .txt file for each year from 1880–2018. More details can be found in `documents/NationalReadMe.pdf`.
+Combines annual national level data files from `input/national/`. There is a separate .txt file for each year from 1880–2018. More details can be found in `documents/NationalReadMe.pdf`. Combines data in a single csv at `input/national/combinedFiles.csv`.
 
 TO-DO: need to add rank.
 
@@ -29,8 +29,8 @@ TO-DO: need to add rank.
 
 #### `npm run combine-states`
 
-Combines annual national level data files from `input/state/`. There is a separate .txt file for each state from 1910–2018. More details can be found in `documents/StateReadMe.pdf`.
+Combines annual national level data files from `input/state/`. There is a separate .txt file for each state from 1910–2018. More details can be found in `documents/StateReadMe.pdf`. Combines data in a single csv at `input/state/combinedFiles.csv`.
 
-TO-DO: need to fix script timeout and add rank.
+TO-DO: need to add rank.
 
 ## Notes

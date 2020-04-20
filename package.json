@@ -46,8 +46,8 @@
   },
   "main": "scripts/main.js",
   "scripts": {
-    "combine-years": "node process/national/s1_combine-years.js",
-    "combine-states": "node process/state/s1_combine-states.js"
+    "combine-years": "node --max-old-space-size=8192 process/national/s1_combine-years.js",
+    "combine-states": "node --max-old-space-size=8192 process/state/s1_combine-states.js"
   },
   "repository": {
     "type": "git",

@@ -23,8 +23,6 @@ Clone the repo and run `npm i`
 
 Combines annual national level data files from `input/national/`. There is a separate .txt file for each year from 1880–2018. More details can be found in `documents/NationalReadMe.pdf`. Combines data in a single csv at `input/national/combinedFiles.csv`.
 
-TO-DO: Fill in missing years and set parameters to limit data.
-
 ### State
 
 #### `npm run combine-states`

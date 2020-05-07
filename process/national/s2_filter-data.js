@@ -28,11 +28,11 @@ function init() {
     const namesNest = d3.nest().key(d => d.name).entries(genderData)
 
     // filter by rank
-    console.log("filtering by rank")
-    const rankFilter = namesNest.filter(d => {
-        const minRank = d3.min(d.values, v => +v.rank)
-        return minRank < 5
-    })
+    // console.log("filtering by rank")
+    // const rankFilter = namesNest.filter(d => {
+    //     const minRank = d3.min(d.values, v => +v.rank)
+    //     return minRank < 5
+    // })
 
     // filter data by name
     console.log("filtering by name")
@@ -41,7 +41,7 @@ function init() {
     // format files to save
     console.log("creating files")
     const csv = d3.csvFormat(karenData)
-    const jsonFile = JSON.stringify(rankFilter)
+    const jsonFile = JSON.stringify(namesNest)
 
     // output the files
     console.log("saving")

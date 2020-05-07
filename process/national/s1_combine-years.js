@@ -9,7 +9,7 @@ const OUT_PATH = './output/national/'
 
 const files = fs.readdirSync(IN_PATH).filter(d => d.includes('.txt'));
 let outputData = [];
-const startYear = 1899
+const startYear = 1918
 const years = d3.range(startYear, 2019)
 
 function processCSV(filename) {
@@ -34,10 +34,10 @@ function filterData(data) {
     const filteredData = data.filter(d => (d.year >= startYear))
 
     // filter out male names
-    const femaleData = filteredData.filter(d => (d.gender == 'F'))
+    //const femaleData = filteredData.filter(d => (d.gender == 'F'))
 
     // save to global variable
-    outputData = femaleData
+    outputData = filteredData
 }
 
 function init() {

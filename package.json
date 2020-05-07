@@ -48,6 +48,7 @@
   "main": "scripts/main.js",
   "scripts": {
     "combine-years": "node --max-old-space-size=8192 process/national/s1_combine-years.js",
+    "filter-data": "node --max-old-space-size=8192 process/national/s2_filter-data.js",
     "combine-states": "node --max-old-space-size=8192 process/state/s1_combine-states.js"
   },
   "repository": {

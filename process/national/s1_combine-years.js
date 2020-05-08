@@ -73,7 +73,7 @@ function init() {
                     name,
                     gender,
                     year,
-                    count: 0,
+                    count: null,
                 }
             }
             delete matchingData["idWithYear"]

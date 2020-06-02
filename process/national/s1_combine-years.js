@@ -1,11 +1,9 @@
 const fs = require('fs');
 const d3 = require('d3');
 const _ = require('lodash');
-//const ranked = require('ranked');
-
 
 const IN_PATH = './input/national/'
-const OUT_PATH = './output/national/'
+const OUT_PATH = 'process/analysis/'
 
 const files = fs.readdirSync(IN_PATH).filter(d => d.includes('.txt'));
 let outputData = [];
@@ -32,9 +30,6 @@ function processCSV(filename) {
 function filterData(data) {
     // filter out previous years' data
     const filteredData = data.filter(d => (d.year >= startYear))
-
-    // filter out male names
-    //const femaleData = filteredData.filter(d => (d.sex == 'F'))
 
     // save to global variable
     outputData = filteredData
@@ -111,7 +106,7 @@ function init() {
 
     // output the file
     console.log("saving")
-    fs.writeFileSync(`${OUT_PATH}combinedFiles.csv`, csv)
+    fs.writeFileSync(`${OUT_PATH}ssaData.csv`, csv)
 }
 
 init();

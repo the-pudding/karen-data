@@ -1,0 +1,221 @@
+---
+title: "Karen Analysis"
+author: "Sara Stoudt"
+date: "5/29/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r}
+library(dplyr)
+```
+
+## Normalize by number of female/male babies per year
+
+```{r}
+data <- read.csv("ssaData.csv", stringsAsFactors = F)
+
+bySexYear <- data %>%
+  group_by(sex, year) %>%
+  summarise(totalBabies = sum(count, na.rm = T))
+
+data <- merge(data, bySexYear, by.x = c("sex", "year"), by.y = c("sex", "year"))
+
+data$prop <- data$count / data$totalBabies
+```
+
+## Get ranking by proportion
+
+```{r}
+allYears <- unique(data$year)
+
+
+helper <- function(x) {
+  dat <- subset(data, year == x & sex == "F")
+  dat <- dat %>% arrange(desc(count))
+  dat$ranking <- 1:nrow(dat)
+
+  dat2 <- subset(data, year == x & sex == "M")
+  dat2 <- dat2 %>% arrange(desc(count))
+  dat2$ranking <- 1:nrow(dat2)
+
+  return(rbind.data.frame(dat, dat2))
+}
+
+byYearRanking <- lapply(allYears, helper) ## alternative: use purrr
+
+allRanked <- do.call("rbind", byYearRanking)
+
+allRanked$ranking[which(is.na(allRanked$count))] <- 0 ## NAs put last in ranking, switch to zero
+
+write.csv(allRanked, "ssaDataNormalized.csv", row.names = F)
+```
+
+## Split by sex
+
+```{r}
+data <- read.csv("ssaDataNormalized.csv", stringsAsFactors = F)
+
+females <- subset(data, sex == "F")
+males <- subset(data, sex == "M")
+
+karen <- subset(data, sex == "F" & name == "Karen")
+notKaren <- subset(data, sex == "F" & name != "Karen")
+```
+
+## Remove names that are never in the top twenty
+
+```{r}
+notKarenNoZero <- subset(notKaren, ranking != 0)
+checkRank <- notKarenNoZero %>%
+  group_by(name) %>%
+  summarise(bestRank = min(ranking))
+
+femalesNotKarenUse <- subset(checkRank, bestRank <= 20)
+
+malesNoZero <- subset(males, ranking != 0)
+checkRank <- malesNoZero %>%
+  group_by(name) %>%
+  summarise(bestRank = min(ranking))
+
+malesUse <- subset(checkRank, bestRank <= 20)
+```
+
+```{r}
+femalesNotKarenD <- subset(notKaren, name %in% femalesNotKarenUse$name)
+malesD <- subset(males, name %in% malesUse$name)
+
+femalesNotKarenUseL <- split(femalesNotKarenD, femalesNotKarenD$name)
+malesUseL <- split(malesD, malesD$name)
+```
+
+## Remove names where data does not exist over half of the time. 
+
+
+```{r}
+dataAvailability <- lapply(femalesNotKarenUseL, function(x) {
+  length(which(x$ranking == 0)) / nrow(x)
+}) %>% unlist()
+
+toRemove <- which(dataAvailability > 0.5)
+
+
+femalesNotKarenUseL <- femalesNotKarenUseL[-toRemove]
+
+dataAvailability <- lapply(malesUseL, function(x) {
+  length(which(x$ranking == 0)) / nrow(x)
+}) %>% unlist()
+
+toRemove <- which(dataAvailability > 0.5)
+
+malesUseL <- malesUseL[-toRemove]
+```
+
+## Correlation with Karen, females
+
+```{r}
+helperCor <- function(name_data, karen_data) {
+  cor(name_data$prop, karen_data$prop, method = "kendall", use = "complete.obs")
+}
+
+karenCor <- lapply(femalesNotKarenUseL, helperCor, karen) %>% unlist()
+```
+
+## Correlation with Karen, males
+
+```{r}
+karenCorM <- lapply(malesUseL, helperCor, karen) %>% unlist()
+```
+
+## Past and Future Karens, females
+
+```{r}
+## old Karen, push other name forward
+helperCorLagOther <- function(name_data, lagN, karen_data) {
+  tryCatch(cor(lag(name_data$prop, lagN), karen_data$prop, method = "kendall", use = "complete.obs"), error = function(i) {
+    return(NA)
+  })
+}
+
+## new Karen, push Karen forward
+helperCorLagKaren <- function(name_data, lagN, karen_data) {
+  tryCatch(cor(name_data$prop, lag(karen_data$prop, lagN), method = "kendall", use = "complete.obs"), error = function(i) {
+    return(NA)
+  })
+}
+
+
+karenCor10 <- lapply(femalesNotKarenUseL, helperCorLagOther, 10, karen) %>% unlist()
+
+karenCor102 <- lapply(femalesNotKarenUseL, helperCorLagKaren, 10, karen) %>% unlist()
+
+karenCor20 <- lapply(femalesNotKarenUseL, helperCorLagOther, 20, karen) %>% unlist()
+
+
+karenCor202 <- lapply(femalesNotKarenUseL, helperCorLagKaren, 20, karen) %>% unlist()
+
+
+karenCor30 <- lapply(femalesNotKarenUseL, helperCorLagOther, 30, karen) %>% unlist()
+
+
+karenCor302 <- lapply(femalesNotKarenUseL, helperCorLagKaren, 30, karen) %>% unlist()
+
+```
+
+
+## Past and Future Karens, males
+
+
+```{r}
+karenCorM10 <- lapply(malesUseL, helperCorLagOther, 10, karen) %>% unlist()
+
+karenCorM102 <- lapply(malesUseL, helperCorLagKaren, 10, karen) %>% unlist()
+
+karenCorM20 <- lapply(malesUseL, helperCorLagOther, 20, karen) %>% unlist()
+
+karenCorM202 <- lapply(malesUseL, helperCorLagKaren, 20, karen) %>% unlist()
+
+karenCorM30 <- lapply(malesUseL, helperCorLagOther, 30, karen) %>% unlist()
+
+karenCorM302 <- lapply(malesUseL, helperCorLagKaren, 30, karen) %>% unlist()
+```
+
+## Save info
+
+```{r}
+numYear <- unique(data$year)
+femaleF <- do.call("rbind", femalesNotKarenUseL)
+
+femaleF$corKaren <- rep(karenCor, each = numYear) ## current Karen
+femaleF$corKaren10P <- rep(karenCor10, each = numYear) ## past Karens
+femaleF$corKaren20P <- rep(karenCor20, each = numYear)
+femaleF$corKaren30P <- rep(karenCor30, each = numYear)
+
+femaleF$corKaren10 <- rep(karenCor102, each = numYear) ## future Karens
+femaleF$corKaren20 <- rep(karenCor202, each = numYear)
+femaleF$corKaren30 <- rep(karenCor302, each = numYear)
+
+maleF <- do.call("rbind", malesUseL)
+
+maleF$corKaren <- rep(karenCorM, each = numYear) ## current Karen
+maleF$corKaren10P <- rep(karenCorM10, each = numYear) ## past Karens
+maleF$corKaren20P <- rep(karenCorM20, each = numYear)
+maleF$corKaren30P <- rep(karenCorM30, each = numYear)
+
+maleF$corKaren10 <- rep(karenCorM102, each = numYear) ## future Karens
+maleF$corKaren20 <- rep(karenCorM202, each = numYear)
+maleF$corKaren30 <- rep(karenCorM302, each = numYear)
+
+row.names(femaleF) <- NULL
+row.names(maleF) <- NULL
+
+write.csv(femaleF, "femaleKarenResults.csv", row.names = F)
+write.csv(maleF, "maleKarenResults.csv", row.names = F)
+
+```
+

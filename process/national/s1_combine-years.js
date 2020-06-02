@@ -22,7 +22,7 @@ function processCSV(filename) {
         return {
             year: +year,
             name: d[0],
-            gender: d[1],
+            sex: d[1],
             count: +d[2]
         }
     })
@@ -34,7 +34,7 @@ function filterData(data) {
     const filteredData = data.filter(d => (d.year >= startYear))
 
     // filter out male names
-    //const femaleData = filteredData.filter(d => (d.gender == 'F'))
+    //const femaleData = filteredData.filter(d => (d.sex == 'F'))
 
     // save to global variable
     outputData = filteredData
@@ -52,7 +52,7 @@ function init() {
     // create an id for each data point
     const dataByYearId = {}
     outputData.forEach(d => {
-        const id = [d.name, d.gender].join("--")
+        const id = [d.name, d.sex].join("--")
         const idWithYear = [id, d.year].join("--")
         dataByYearId[idWithYear] = {...d, id, idWithYear}
     })
@@ -67,11 +67,11 @@ function init() {
             const idWithYear = [id, year].join("--")
             let matchingData = dataByYearId[idWithYear]
             if (!matchingData) {
-                const [name, gender] = id.split("--")
+                const [name, sex] = id.split("--")
                 matchingData = {
                     id,
                     name,
-                    gender,
+                    sex,
                     year,
                     count: null,
                 }
@@ -89,13 +89,13 @@ function init() {
             M: 0,
         }
         const rankedValues = _.orderBy(values, "count", "desc").map((d, i) => {
-            if (runningCount[d.gender] != d.count) {
-                runningRank[d.gender] += 1
+            if (runningCount[d.sex] != d.count) {
+                runningRank[d.sex] += 1
             }
-            runningCount[d.gender] = d.count
+            runningCount[d.sex] = d.count
             return {
                 ...d,
-                rank: runningRank[d.gender],
+                rank: runningRank[d.sex],
             }
         })
         return rankedValues

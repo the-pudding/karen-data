@@ -30,4 +30,4 @@ Combines annual national level data files from `input/national/`. There is a sep
 
 #### Open and run `karenAnalysisCode.Rmd`
 
-This file can be found in `process/analysis`. The script reads in the `ssaData.csv` file from the previsou step, and measures the [Kendall rank correlation coefficient](https://towardsdatascience.com/kendall-rank-correlation-explained-dee01d99c535) between "Karen" and another name. Results are split by gender and output to `femaleKarenResults.csv` and `maleKarenResults.csv`.  
+This file can be found in `process/analysis`. The script reads in the `ssaData.csv` file from the previous step, and measures the [Kendall rank correlation coefficient](https://towardsdatascience.com/kendall-rank-correlation-explained-dee01d99c535) between "Karen" and another name. Results are split by gender and output to `femaleKarenResults.csv` and `maleKarenResults.csv`.  
